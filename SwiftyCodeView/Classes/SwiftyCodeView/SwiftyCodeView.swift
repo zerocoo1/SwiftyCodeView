@@ -9,6 +9,7 @@ import UIKit
 @objc
 public protocol SwiftyCodeViewDelegate: class {
     func codeView(sender: SwiftyCodeView, didFinishInput code: String)
+    func didDeleteBackward(sender: SwiftyCodeView)
 }
 
 @IBDesignable
@@ -133,8 +134,9 @@ extension SwiftyCodeView: UITextFieldDelegate, SwiftyCodeTextFieldDelegate {
             
             let prevItem = stackView.arrangedSubviews[i-1] as! SwiftyCodeItemView
             _ = prevItem.becomeFirstResponder()
-            prevItem.textField.text = ""
         }
         sendActions(for: .valueChanged)
+        
+        delegate?.didDeleteBackward(sender: self)
     }
 }
