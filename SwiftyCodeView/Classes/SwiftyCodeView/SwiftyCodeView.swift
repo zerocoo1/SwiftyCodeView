@@ -103,28 +103,34 @@ extension SwiftyCodeView: UITextFieldDelegate, SwiftyCodeTextFieldDelegate {
     
     public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         
-        if string == "" { //is backspace
-            return true
-        }
+        let index = textField.tag
+        let item = stackView.arrangedSubviews[index] as! SwiftyCodeItemView
         
-        if !textField.hasText {
-            let index = textField.tag
-            let item = stackView.arrangedSubviews[index] as! SwiftyCodeItemView
-            item.textField.text = string
-            sendActions(for: .valueChanged)
-            if index == length - 1 { //is last textfield
-                delegate?.codeView(sender: self, didFinishInput: self.code)
-                textField.resignFirstResponder()
+        if string == "" { //is backspace
+            if index == length - 1 && item.textField.text != string {
+                item.textField.text = string
                 return false
             }
             
-            _ = stackView.arrangedSubviews[index + 1].becomeFirstResponder()
+            return true
         }
+        
+        item.textField.text = string
+        sendActions(for: .valueChanged)
+        if index == length - 1 { //is last textfield
+            delegate?.codeView(sender: self, didFinishInput: self.code)
+            textField.resignFirstResponder()
+            return false
+        }
+        
+        _ = stackView.arrangedSubviews[index + 1].becomeFirstResponder()
+        
         
         return false
     }
     
     public func deleteBackward(sender: SwiftyCodeTextField) {
+        
         for i in 1..<length{
             let itemView = stackView.arrangedSubviews[i] as! SwiftyCodeItemView
             
@@ -134,9 +140,10 @@ extension SwiftyCodeView: UITextFieldDelegate, SwiftyCodeTextFieldDelegate {
             
             let prevItem = stackView.arrangedSubviews[i-1] as! SwiftyCodeItemView
             _ = prevItem.becomeFirstResponder()
+            prevItem.textField.text = ""
         }
-        sendActions(for: .valueChanged)
         
+        sendActions(for: .valueChanged)
         delegate?.didDeleteBackward(sender: self)
     }
 }
