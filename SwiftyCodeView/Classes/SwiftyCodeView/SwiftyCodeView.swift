@@ -109,6 +109,7 @@ extension SwiftyCodeView: UITextFieldDelegate, SwiftyCodeTextFieldDelegate {
         if string == "" { //is backspace
             if index == length - 1 && item.textField.text != string {
                 item.textField.text = string
+                delegate?.didDeleteBackward(sender: self)
                 return false
             }
             
